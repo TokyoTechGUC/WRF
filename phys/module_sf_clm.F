@@ -58786,6 +58786,7 @@ CONTAINS
                    ,inest, sf_urban_physics,do_bioe,do_meganfile,id,  &
 !  End modification
 !Optional urban
+                ahe_scheme,ahe24,ahucm,                           &
                 CMR_SFCDIF,CHR_SFCDIF,CMC_SFCDIF,CHC_SFCDIF,   &
                 CMGR_SFCDIF,CHGR_SFCDIF,                       &
                 tr_urb2d,tb_urb2d,tg_urb2d,tc_urb2d,qc_urb2d,  & !H urban
@@ -58914,6 +58915,11 @@ CONTAINS
                                                          tslb     ! TSLB     STEMP
 
    integer,intent(in)  :: nlcat
+   INTEGER,  INTENT(IN   )   :: ahe_scheme
+   REAL, INTENT(IN), DIMENSION( 0:23, ims:ime, jms:jme ), OPTIONAL :: ahe24
+   REAL, INTENT(OUT), DIMENSION( ims:ime,jms:jme ) :: ahucm
+   REAL, DIMENSION(0:23) :: AH24
+   REAL :: AH
   real,intent(in) :: dt,dx
   real,intent(in) :: xtime, dtwrf   !fchen
   real(r8) :: dtt
@@ -60352,9 +60358,10 @@ has_urban_physics : &
                        hgt_urb,frc_urb,lb_urb, check,CMCR_URB,TGR_URB,  & ! H
                        TGRL_URB,SMR_URB,CMGR_URB, CHGR_URB, jmonth,     & ! H
                        DRELR_URB,DRELB_URB,                             & ! H
-                       DRELG_URB,FLXHUMR_URB,FLXHUMB_URB,FLXHUMG_URB)    
+                       DRELG_URB,FLXHUMR_URB,FLXHUMB_URB,FLXHUMG_URB,   &
+		       AHE_SCHEME,AH24,AH)
 !sw--
-
+            AHUCM(I,J) = AH
             TS_URB2D(I,J) = TS_URB
 
             albxy(i,j) = FRC_URB2D(I,J)*ALB_URB+(1-FRC_URB2D(I,J))*albxy_buf   ![-]

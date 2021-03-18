@@ -256,7 +256,9 @@ CONTAINS
              !  Optional adaptive time step
      &          ,bldt,curr_secs,adapt_step_flag,bldtacttime           & 
          ! Optional urban with BEP
-     &          ,sf_urban_physics,gmt,xlat,xlong,julday               &
+     &          ,sf_urban_physics,ahe_scheme,ahe24                    &
+     &          ,ahucm                                                &
+     &          ,gmt,xlat,xlong,julday                                &
      &          ,num_urban_ndm                                        & !multi-layer urban
      &          ,urban_map_zrd                                        & !multi-layer urban
      &          ,urban_map_zwd                                        & !multi-layer urban
@@ -639,6 +641,10 @@ CONTAINS
    INTEGER, INTENT(IN) :: sf_sfclay_physics, sf_surface_physics,      &
                           sf_urban_physics,ra_lw_physics,sst_update,  &
                           ra_sw_physics, bl_pbl_physics
+   INTEGER, INTENT(IN) :: ahe_scheme
+   REAL, DIMENSION( 0:23, ims:ime, jms:jme ), INTENT(IN), OPTIONAL &
+                       :: ahe24
+   REAL, INTENT(OUT), DIMENSION( ims:ime, jms:jme ) :: AHUCM
    INTEGER, INTENT(IN),OPTIONAL :: sst_skin, tmn_update,              &
                                    scm_force_skintemp, scm_force_flux 
 
@@ -2743,7 +2749,7 @@ CONTAINS
                 ids,ide, jds,jde, kds,kde,                      &
                 ims,ime, jms,jme, kms,kme,                      &
                 i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte,    &
-                sf_urban_physics                                &
+                sf_urban_physics,ahe_scheme,ahe24,ahucm               &
 !Optional urban
                 ,cmr_sfcdif,chr_sfcdif,cmc_sfcdif,chc_sfcdif    &
                 ,cmgr_sfcdif,chgr_sfcdif                        &
@@ -2872,7 +2878,7 @@ CONTAINS
                 ids,ide, jds,jde, kds,kde,                      &
                 ims,ime, jms,jme, kms,kme,                      &
                 i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte,    &
-                sf_urban_physics                                &
+                sf_urban_physics,ahe_scheme,ahe24,ahucm         &
 !Optional urban
                 ,cmr_sfcdif,chr_sfcdif,cmc_sfcdif,chc_sfcdif    &
                 ,cmgr_sfcdif,chgr_sfcdif                        &
@@ -3156,7 +3162,7 @@ CONTAINS
 	       IOPT_INF, IOPT_RAD, IOPT_ALB, IOPT_SNF, IOPT_TBOT,   IOPT_STC, &
 	       IOPT_GLA, IOPT_RSF, IOPT_SOIL,IOPT_PEDO,IOPT_CROP,   IOPT_IRR, &
               IOPT_IRRM,                                                      &
-                IZ0TLND, SF_URBAN_PHYSICS,                                    &
+                IZ0TLND, SF_URBAN_PHYSICS, AHE_SCHEME, AHE24,          AHUCM, &
 	       SOILCOMP,  SOILCL1,  SOILCL2,  SOILCL3,   SOILCL4,             &
 		  T_PHY,  QV_CURR,    U_PHY,    V_PHY,    SWDOWN,    SWDDIR,  &
                 SWDDIF,     GLW,                                              &
@@ -3248,7 +3254,8 @@ CONTAINS
                             a_u_bep,        a_v_bep,        a_t_bep,    a_q_bep,            & !O multi-layer urban
                             a_e_bep,        b_u_bep,        b_v_bep,                        & !O multi-layer urban
                             b_t_bep,        b_q_bep,        b_e_bep,    dlg_bep,            & !O multi-layer urban
-                           dl_u_bep,         sf_bep,         vl_bep)                          !O multi-layer urban
+                           dl_u_bep,         sf_bep,         vl_bep,                        &!O multi-layer urban
+			   ahe_scheme, ahe24, ahucm)
 	 
 	 ENDIF 
 
@@ -3799,6 +3806,7 @@ CONTAINS
                 ims,ime, jms,jme, kms,kme,                      &
                 i_start(ij),i_end(ij), j_start(ij),j_end(ij), kts,kte, &
                 inest,sf_urban_physics,do_bioe,do_meganfile,id   &
+		ahe_scheme,ahe24,ahucm                          &
 !Optional urban
                ,cmr_sfcdif,chr_sfcdif,cmc_sfcdif,chc_sfcdif    &
                ,cmgr_sfcdif,chgr_sfcdif                        &
